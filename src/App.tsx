@@ -1,6 +1,40 @@
+
 type Props = {}
-import { FaDeleteLeft } from "react-icons/fa6"
+import Input from "./Input"
+import  { useEffect, useState } from 'react'
+
+//type TaggingList = 'Break' | 'Lunch' | 'Meeting' | 'Coaching' | 'Wellness'
+type TaggingList = {
+  label: string
+  minutes: number
+}
+
 const App = (props: Props) => {
+  const [tagging, setTagging] = useState<string[]>(['Break', 'Lunch', 'Meeting', 'Coaching', 'Wellness']);
+  const [endshift, setEndshift] = useState<string>('10:00')
+
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const onHandleLabel = (e: any, index: number) => {
+    setTagging(prevArray => {
+      const newArray = [...prevArray];
+      newArray[index] = e.target.value;
+      return newArray;
+    });
+  }
+
+  const onHandleMinutes = () => {
+    
+  }
+  const onHandleAdd = () => {
+    setTagging(prevArray => [...prevArray, '']);
+  }
   return (
     <>
     <div className="flex flex-col h-screen justify-center items-center">
@@ -10,54 +44,29 @@ const App = (props: Props) => {
         </div>
         <div className="flex flex-col gap-3">
           <p className="text-left text-lg rounded-lg">End shift</p>
-          <input className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" type="time" name="endshift" id="endshift" />
+          <input 
+            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" 
+            type="time" 
+            name="endshift" 
+            id="endshift"  
+            value={endshift}
+            onChange={(e) => setEndshift(e.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-3 text-lg">
-          <p>Current Time: <strong>{new Date().toLocaleTimeString()}</strong></p>
+          <p>Current Time: <strong>{currentTime.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit",})}</strong></p>
           <p>Remaining Time: <strong>{new Date().toLocaleTimeString()}</strong></p>
         </div>
         <div className="flex flex-col gap-3 text-lg">
-          <div className="flex flex-row w-full border-gray-300">
-            <input type="text" className="w-4/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Tagging" />
-            <input type="number" className="w-2/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Minutes"/>
-            <button className="text-purple-500 rounded-lg hover:text-red-700 transition border-b-purple-900 ml-1">
-              <FaDeleteLeft className="text-3xl" />
-            </button>
-          </div>
-          <div className="flex flex-row w-full border-gray-300">
-            <input type="text" className="w-4/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Tagging" />
-            <input type="number" className="w-2/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Minutes"/>
-            <button className="text-purple-500 rounded-lg hover:text-red-700 transition border-b-purple-900 ml-1">
-              <FaDeleteLeft className="text-3xl" />
-            </button>
-          </div>
-          <div className="flex flex-row w-full border-gray-300">
-            <input type="text" className="w-4/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Tagging" />
-            <input type="number" className="w-2/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Minutes"/>
-            <button className="text-purple-500 rounded-lg hover:text-red-700 transition border-b-purple-900 ml-1">
-              <FaDeleteLeft className="text-3xl" />
-            </button>
-          </div>
-          <div className="flex flex-row w-full border-gray-300">
-            <input type="text" className="w-4/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Tagging" />
-            <input type="number" className="w-2/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Minutes"/>
-            <button className="text-purple-500 rounded-lg hover:text-red-700 transition border-b-purple-900 ml-1">
-              <FaDeleteLeft className="text-3xl" />
-            </button>
-          </div>
-          <div className="flex flex-row w-full border-gray-300">
-            <input type="text" className="w-4/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Tagging" />
-            <input type="number" className="w-2/6 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Minutes"/>
-            <button className="text-purple-500 rounded-lg hover:text-red-700 transition border-b-purple-900 ml-1">
-              <FaDeleteLeft className="text-3xl" />
-            </button>
-          </div>
+          {tagging.map((tag, index) => (
+            <Input minutes={0} tagging={tag} onHandleLabel={onHandleLabel} onHandleMinutes={onHandleMinutes} key={index} index={index}/>
+          ))}
           <div className="flex items-center justify-center">
-            <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded">Add Indirect</button>
+            <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" onClick={onHandleAdd}>Add Indirect</button>
           </div>
           <div>
             <strong className="text-xl">Total Indirect: 1 Hour and 30 Minutes</strong>
-            <div className="bg-violet-100 rounded-lg p-4 shadow-md">
+            <div className="bg-violet-100 rounded-lg p-4 shadow-md gap-2 flex flex-col">
               <div className="flex flex-row justify-between"> 
                 <p>Schedule</p>
                 <label className="inline-flex items-center cursor-pointer">
